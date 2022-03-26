@@ -3120,32 +3120,21 @@ Unit = Class(moho.unit_methods) {
         end
 
         local layer = self.Layer
+        -- Seabed is a layer, but there are no *Seabed sounds, instead *Water sounds are supposed to be used.
+        if layer == 'Seabed' then
+            layer = 'Water'
+        end
 
         if old == 'Stopped' then
-            -- Try the specialised sound, fall back to the general one.
-            if not self:PlayUnitSound('StartMove' .. layer) then
-                self:PlayUnitSound('StartMove')
-            end
+            self:PlayUnitSound('StartMove')
+            self:PlayUnitSound('AmbientMove')
 
-            -- Initiate the unit's ambient movement sound
-            -- Note that there is not currently an 'Air' version, and that
-            -- AmbientMoveWater plays if the unit is in either the Water or Seabed layer.
-
-            if not (layer == 'Sub' and self:PlayUnitAmbientSound('AmbientMoveSub')) then
-                self:PlayUnitAmbientSound('AmbientMove')
-            end
+            self:DoOnHorizontalStartMoveCallbacks()
         end
 
         if new == 'Stopped' then
-            -- Try the specialised sound, fall back to the general one.
-            if not self:PlayUnitSound('StopMove' .. layer) then
-                self:PlayUnitSound('StopMove')
-            end
-
+            self:PlayUnitSound('StopMove')
             self:StopUnitAmbientSound('AmbientMove')
-            self:StopUnitAmbientSound('AmbientMoveSub')
-
-            self:DoOnHorizontalStartMoveCallbacks()
         end
 
         if self.MovementEffectsExist then

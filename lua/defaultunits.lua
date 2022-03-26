@@ -1561,6 +1561,24 @@ SubUnit = Class(MobileUnit) {
         Warp(self.SoundEntity, self:GetPosition())
         self.SoundEntity:AttachTo(self,-1)
     end,
+
+    OnMotionHorzEventChange = function(self, new, old)
+        MobileUnit.OnMotionHorzEventChange(self, new, old)
+
+        LOG("I am a SubUnit")
+        LOG(GetGameTimeSeconds() .. ' Old: ' .. old)
+        LOG(GetGameTimeSeconds() .. ' New: ' .. new)
+
+        if old == 'Stopped' then
+            self:PlayUnitSound('StartMoveSub')
+            self:PlayUnitAmbientSound('AmbientMoveSub')
+        end
+
+        if new == 'Stopped' then
+            self:PlayUnitSound('StopMoveSub')
+            self:StopUnitAmbientSound('AmbientMoveSub')
+        end
+    end,
 }
 
 -- AIR UNITS
@@ -2089,9 +2107,9 @@ HoverLandUnit = Class(MobileUnit) {
         LOG("I am a HoverLand unit")
 
         if old == 'Stopped' then 
-            if self.Layer == 'Water' then 
+            if self.Layer == 'Water' or self.Layer == 'Seabed' then 
                 self:PlayUnitAmbientSound('AmbientMoveWater')
-            elseif self.Layer == 'Land' or self.Layer == 'Seabed' then
+            elseif self.Layer == 'Land' then
                 self:PlayUnitAmbientSound('AmbientMoveLand')
             end
         end
